@@ -15,10 +15,11 @@
         </composite:interface>
 
         <composite:implementation>
-
         <h:dataTable value="#{cc.attrs.bibList.getObjects(cc.attrs.bibItemType)}" var="bibitem">
             <h:column>
-                <p onclick="alert('#{bibList.formatEntry(bibitem)}')" prefix="bib: http://zeitkunst.org/bibtex/0.2/bibtex.owl#" typeof="bib:Entry">
+                <ui:param name="bibstring" value="#{bibList.formatEntry(bibitem)}"/>
+
+                <p onclick="alert('#{bibstring}')" prefix="bib: http://zeitkunst.org/bibtex/0.2/bibtex.owl#" typeof="bib:Entry">
                     <ui:fragment rendered="#{bibList.getField(bibitem,'author') != null}"><span property="bib:hasAuthor">#{bibList.getField(bibitem,'author')}</span>.</ui:fragment>
                     <ui:fragment rendered="#{bibList.getField(bibitem,'title') != null}"><em><span property="bib:hasTitle">#{bibList.getField(bibitem,'title')}</span></em>.</ui:fragment>
 

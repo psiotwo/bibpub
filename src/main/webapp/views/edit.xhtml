@@ -1,25 +1,29 @@
 <?xml version="1.0"?>
 <f:view
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html">
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html">
     <h:head/>
     <h:body>
-        <h:form >
+        <h:form>
             <table>
                 <tr>
-                    <td><h:outputLabel for="bibtexIRI" value="BibTeX File:" /></td>
-                    <td><h:inputText id="bibtexIRI" value="#{bibList.bibtexIRI}" /></td>
-                    <td><h:message for="bibtexIRI" /></td>
+                    <td><h:outputLabel for="bibtexIRI" value="#{msg['Edit.lblBibTeXIRI']}"/></td>
+                    <td><h:inputText id="bibtexIRI" value="#{bibList.bibtexIRI}">
+                        <f:validateRegex pattern="(file:///).+"/>
+                    </h:inputText></td>
+                    <td><h:message for="bibtexIRI"/></td>
                 </tr>
                 <tr>
-                    <td><h:outputLabel for="sections" value="Sections:" /></td>
-                    <td><h:inputText id="sections" value="#{bibList.sections}" /></td>
-                    <td><h:message for="sections" /></td>
+                    <td><h:outputLabel for="sections" value="#{msg['Edit.lblSections']}"/></td>
+                    <td><h:inputText id="sections" value="#{bibList.sections}">
+                        <f:validateRegex pattern="([a-zA-Z])+(,?([a-zA-Z])+)*"/>
+                    </h:inputText></td>
+                    <td><h:message for="sections"/></td>
                 </tr>
-            </table>
-            <hr />
-            <h:commandButton action="#{bibList.submit}" value="Submit" />
+              </table>
+            <hr/>
+            <h:commandButton action="#{bibList.submit}" value="#{msg['Edit.btnSubmit']}"/>
         </h:form>
-	</h:body>
+    </h:body>
 </f:view>

@@ -17,47 +17,66 @@ public class BibList {
 
     private String bibtexIRI;
 
-    private List<BibItemType> list;
+    private String sections;
 
-    private BibTeXDatabase db;
+    private Boolean renderCitation;
 
-    private List<BibTeXEntry> other;
+    private BibTeXDatabase bibTeXDatabase;
 
-    private Map<BibItemType, List<BibTeXEntry>> entries;
+    private Map<BibItemType, List<BibTeXEntry>> namedEntries;
+    private List<BibTeXEntry> otherEntries;
 
-    public BibItemType[] getAll() {
-        return BibItemType.values();
+    private String getStoredProperty(final String key) {
+        return LiferayFacesContext.getInstance().getPortletPreferences().getValue(key,null);
+    }
+
+    private void setStoredProperties(final Map<String,String> preferences) {
+        final PortletPreferences prefs = LiferayFacesContext.getInstance().getPortletRequest().getPreferences();
+
+        try {
+            for (Map.Entry<String,String> entry : preferences.entrySet()) {
+                prefs.setValue(entry.getKey(),entry.getValue());
+            }
+
+            // Save the preferences values
+            prefs.store();
+        } catch (ReadOnlyException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ValidatorException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     @PostConstruct
     public void init() {
         System.out.println("INITIALIZING ... ");
-        list = new ArrayList<BibItemType>();
 
-        final PortletPreferences prefs = getPortletRequest().getPreferences();
-        bibtexIRI = prefs.getValue("bibtexIRI", null);
-        setSections(prefs.getValue("sections", null));
+        bibtexIRI = getStoredProperty("bibtexIRI");
+        sections = getStoredProperty("sections");
+        renderCitation = Boolean.parseBoolean(getStoredProperty("renderCitation"));
 
         reload();
     }
 
     private void reload() {
-        other = new ArrayList<BibTeXEntry>();
-        entries = new HashMap<BibItemType, List<BibTeXEntry>>();
+        otherEntries = new ArrayList<BibTeXEntry>();
+        namedEntries = new HashMap<BibItemType, List<BibTeXEntry>>();
         for(BibItemType t : BibItemType.values()) {
             List<BibTeXEntry> list = new ArrayList<BibTeXEntry>();
-            entries.put(t,list);
+            namedEntries.put(t, list);
         }
 
         try {
-            db = parseBibTeX(bibtexIRI);
+            bibTeXDatabase = parseBibTeX(bibtexIRI);
 
-            for(BibTeXEntry entry : db.getEntries().values()) {
+            for(BibTeXEntry entry : bibTeXDatabase.getEntries().values()) {
                 BibItemType type = BibItemType.forType(entry.getType().getValue());
                 if ( type == null) {
-                    other.add(entry);
+                    otherEntries.add(entry);
                 } else {
-                    entries.get(type).add(entry);
+                    namedEntries.get(type).add(entry);
                 }
             }
 
@@ -108,8 +127,6 @@ public class BibList {
             return null;
         }
 
-        System.out.println("PARSING " + value.toUserString());
-
         try {
             String latexString = value.toUserString();
             List<LaTeXObject> objects = parseLaTeX(latexString);
@@ -140,6 +157,8 @@ public class BibList {
 
     static
     public List<LaTeXObject> parseLaTeX(String string) throws IOException, ParseException {
+        string = string.replaceAll("'","v");
+
         Reader reader = new StringReader(string);
 
         try {
@@ -158,44 +177,27 @@ public class BibList {
     public List<BibTeXEntry> getObjects(final String type) {
         BibItemType typeX = null;
         if ( type == null || ((typeX = BibItemType.forType(type)) == null) || (typeX == BibItemType.OTHER)) {
-            return other;
+            return otherEntries;
         }
 
-        return entries.get(typeX);
+        return namedEntries.get(typeX);
 
     }
 
     public void submit() {
         try {
-            final PortletPreferences prefs = getPortletRequest().getPreferences();
-            prefs.setValue("bibtexIRI", bibtexIRI);
-            prefs.setValue("sections", getSections());
+            final Map<String,String> properties = new HashMap<String, String>();
+            properties.put("bibtexIRI",bibtexIRI);
+            properties.put("sections",sections);
+            setStoredProperties(properties);
 
-            // Save the preferences values
-            prefs.store();
-            //reload the list
             reload();
 
             // Switch the portlet to VIEW mode
-//            ActionResponse actionResponse = (ActionResponse)(getPortletResponse());
-//            actionResponse.setPortletMode(PortletMode.VIEW);
+            LiferayFacesContext.getInstance().getActionResponse().setPortletMode(PortletMode.VIEW);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /*
-    * Get PortletRequest within a JSF backing managed-bean
-    */
-    public PortletRequest getPortletRequest() {
-        return LiferayFacesContext.getInstance().getPortletRequest();
-    }
-
-    /*
-     * Get PortletResponse within a JSF backing managed-bean
-     */
-    public PortletResponse getPortletResponse() {
-        return LiferayFacesContext.getInstance().getPortletResponse();
     }
 
     public String getBibtexIRI() {
@@ -207,33 +209,30 @@ public class BibList {
     }
 
     public void setSections(String sections) {
-        list.clear();
+        this.sections = sections;
+    }
+
+    public String getSections() {
+        return sections;
+    }
+
+    public List<BibItemType> getSectionList() {
+        final List<BibItemType> sectionList = new ArrayList<BibItemType>();
         for( final String s : sections.split(",")) {
             BibItemType t = BibItemType.forType(s.trim());
             if ( t == null ) {
                 continue;
             }
-            list.add(t);
+            sectionList.add(t);
         }
+        return sectionList;
     }
 
-    public String getSections() {
-        String x = "";
-        boolean first = true;
-        for( final BibItemType s : list) {
-            if (!first) {
-                x+=",";
-            } else {
-                first=false;
-            }
-            x += s.getType();
-        }
-        System.out.println("GET LIST " + x);
-        return x;
+    public Boolean getRenderCitation() {
+        return renderCitation;
     }
 
-    public List<BibItemType> getSectionList() {
-        return list;
+    public void setRenderCitation(Boolean renderCitation) {
+        this.renderCitation = renderCitation;
     }
-
 }

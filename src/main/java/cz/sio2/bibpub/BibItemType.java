@@ -2,7 +2,7 @@ package cz.sio2.bibpub;
 
 public enum BibItemType {
 
-    ARTICLE("Article"), BOOK("Book"), INPROCEEDINGS("InProceedings"), OTHER("Other");
+    ARTICLE("Article"), INBOOK("InBook"), INPROCEEDINGS("InProceedings"), OTHER("Other");
 
     String type;
 
