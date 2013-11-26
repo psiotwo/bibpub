@@ -1,12 +1,14 @@
 package cz.sio2.bibpub;
 
 import com.liferay.faces.portal.context.LiferayFacesContext;
+
 import org.jbibtex.*;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.portlet.*;
+
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -137,7 +139,7 @@ public class BibList {
 
         return formattedContent;
     }
-
+    
     public String formatEntry(BibTeXEntry entry) {
         BibTeXFormatter f = new BibTeXFormatter();
                                        f.setIndent("   ");
@@ -174,6 +176,13 @@ public class BibList {
         return new LaTeXPrinter().print(objects);
     }
 
+    public List<BibTeXEntry> getAllObjectsInDescendingDate() {
+	System.out.println("DB="+bibTeXDatabase);
+	System.out.println("entries="+bibTeXDatabase.getEntries());
+	final List<BibTeXEntry> entries = new ArrayList<BibTeXEntry>(bibTeXDatabase.getEntries().values());
+	return entries;
+    }
+    
     public List<BibTeXEntry> getObjects(final String type) {
         BibItemType typeX = null;
         if ( type == null || ((typeX = BibItemType.forType(type)) == null) || (typeX == BibItemType.OTHER)) {

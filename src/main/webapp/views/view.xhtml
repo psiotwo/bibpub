@@ -8,11 +8,7 @@
         xmlns:sio2="http://java.sun.com/jsf/composite/sio2/bibpub">
 	<h:head/>
 	<h:body>
-        <ui:repeat value="#{bibList.sectionList}" var="item">
-            <ui:param name="it" value="List.Heading.#{item.type}"/>
-            <h:outputText styleClass="heading" value="#{msg[it]}"/>
-            <sio2:BibList bibList="#{bibList}" bibItemType="#{item.type}"/>
-        </ui:repeat>
+	    <sio2:BibList bibList="#{bibList}"/>
     </h:body>
 </f:view>
 </html>
