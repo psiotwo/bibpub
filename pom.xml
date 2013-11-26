@@ -113,6 +113,12 @@
             <artifactId>apache-any23-core</artifactId>
             <version>0.7.0-incubating</version>
         </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

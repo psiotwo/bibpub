@@ -16,24 +16,7 @@
         <composite:implementation>
         <h:dataTable value="#{cc.attrs.bibList.getAllObjectsInDescendingDate()}" var="bibitem">
             <h:column>
-                <ui:param name="bibstring" value="#{bibList.formatEntry(bibitem)}"/>
-
-                <p onclick="alert('#{bibstring}')" prefix="bib: http://zeitkunst.org/bibtex/0.2/bibtex.owl#" typeof="bib:Entry">
-                    <ui:fragment rendered="#{bibList.getField(bibitem,'author') != null}"><span property="bib:hasAuthor">#{bibList.getField(bibitem,'author')}</span>.</ui:fragment>
-                    <ui:fragment rendered="#{bibList.getField(bibitem,'title') != null}"><em><span property="bib:hasTitle">#{bibList.getField(bibitem,'title')}</span></em>.</ui:fragment>
-
-                    <ui:fragment rendered="#{bibitem.type.value == 'article'}">
-                        <ui:fragment rendered="#{bibList.getField(bibitem,'journal') != null}"><span  property="bib:hasJournal">#{bibList.getField(bibitem,'journal')}</span>.</ui:fragment>
-                        <ui:fragment rendered="#{bibList.getField(bibitem,'volume') != null}">vol. <span  property="bib:hasVolume">#{bibList.getField(bibitem,'volume')}</span>.</ui:fragment>
-                        <ui:fragment rendered="#{bibList.getField(bibitem,'number') != null}">nr. <span  property="bib:hasNumber">#{bibList.getField(bibitem,'number')}</span>.</ui:fragment>
-                    </ui:fragment>
-
-                    <ui:fragment rendered="#{bibitem.type.value == 'book'}">
-                        <ui:fragment rendered="#{bibList.getField(bibitem,'publisher') != null}"><span property="bib:hasJournal">#{bibList.getField(bibitem,'publisher')}</span>.</ui:fragment>
-                    </ui:fragment>
-
-                    <ui:fragment rendered="#{bibList.getField(bibitem,'year') != null}"><span  property="bib:hasYear">#{bibList.getField(bibitem,'year')}</span>.</ui:fragment>
-                </p>
+            	<h:outputText value="#{bibList.formatInHTML(bibitem)}" escape="false" />            	
             </h:column>
         </h:dataTable>
         </composite:implementation>

@@ -25,9 +25,6 @@ public class BibList {
 
     private BibTeXDatabase bibTeXDatabase;
 
-    private Map<BibItemType, List<BibTeXEntry>> namedEntries;
-    private List<BibTeXEntry> otherEntries;
-
     private String getStoredProperty(final String key) {
         return LiferayFacesContext.getInstance().getPortletPreferences().getValue(key,null);
     }
@@ -63,25 +60,8 @@ public class BibList {
     }
 
     private void reload() {
-        otherEntries = new ArrayList<BibTeXEntry>();
-        namedEntries = new HashMap<BibItemType, List<BibTeXEntry>>();
-        for(BibItemType t : BibItemType.values()) {
-            List<BibTeXEntry> list = new ArrayList<BibTeXEntry>();
-            namedEntries.put(t, list);
-        }
-
         try {
-            bibTeXDatabase = parseBibTeX(bibtexIRI);
-
-            for(BibTeXEntry entry : bibTeXDatabase.getEntries().values()) {
-                BibItemType type = BibItemType.forType(entry.getType().getValue());
-                if ( type == null) {
-                    otherEntries.add(entry);
-                } else {
-                    namedEntries.get(type).add(entry);
-                }
-            }
-
+            bibTeXDatabase = parseBibTeX(new URL(bibtexIRI).openConnection().getInputStream());
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (ParseException e) {
@@ -90,7 +70,7 @@ public class BibList {
     }
 
     static
-    public BibTeXDatabase parseBibTeX(String iri) throws IOException, ParseException {
+    public BibTeXDatabase parseBibTeX(InputStream is) throws IOException, ParseException {
         Reader reader = null;
         try {
             BibTeXParser parser = new BibTeXParser() {
@@ -111,7 +91,7 @@ public class BibList {
                     }
                 }
             };
-            reader = new InputStreamReader(new URL(iri).openConnection().getInputStream());
+            reader = new InputStreamReader(is);
             return parser.parse(reader);
         } finally {
             if (reader != null) {
@@ -140,7 +120,7 @@ public class BibList {
         return formattedContent;
     }
     
-    public String formatEntry(BibTeXEntry entry) {
+    public static String formatEntry(BibTeXEntry entry) {
         BibTeXFormatter f = new BibTeXFormatter();
                                        f.setIndent("   ");
         BibTeXDatabase db = new BibTeXDatabase();
@@ -155,6 +135,10 @@ public class BibList {
         }
 
         return w.toString();
+    }
+    
+    public String formatInHTML(BibTeXEntry entry) {
+	return new RDFaReferenceFormatter().format(entry, true);
     }
 
     static
@@ -185,12 +169,18 @@ public class BibList {
     
     public List<BibTeXEntry> getObjects(final String type) {
         BibItemType typeX = null;
-        if ( type == null || ((typeX = BibItemType.forType(type)) == null) || (typeX == BibItemType.OTHER)) {
-            return otherEntries;
+        if ( type == null || ((typeX = BibItemType.forType(type)) == null)) {
+            return new ArrayList<BibTeXEntry>(bibTeXDatabase.getEntries().values());
         }
-
-        return namedEntries.get(typeX);
-
+        
+        final List<BibTeXEntry> entries = new ArrayList<BibTeXEntry>();
+        for( final BibTeXEntry e : bibTeXDatabase.getEntries().values()) {
+            if (e.getType().equals(typeX)) {
+        	entries.add(e);
+            }
+        }
+       
+        return entries;
     }
 
     public void submit() {
