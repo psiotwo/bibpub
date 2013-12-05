@@ -31,10 +31,6 @@
                 <name>bibtexIRI</name>
                 <value>defaultIRI</value>
             </preference>
-            <preference>
-                <name>sections</name>
-                <value>Article,Book,InProceedings,Other</value>
-            </preference>
         </portlet-preferences>
         <security-role-ref>
             <role-name>administrator</role-name>

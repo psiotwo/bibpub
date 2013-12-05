@@ -2,28 +2,30 @@
 <f:view
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:f="http://java.sun.com/jsf/core"
-        xmlns:h="http://java.sun.com/jsf/html">
+        xmlns:h="http://java.sun.com/jsf/html" xmlns:aui="http://java.sun.com/jsf/html">
     <h:head/>
     <h:body>
-        <h:form>
+        <h:form id="formEdit">
             <table>
                 <tr>
                     <td><h:outputLabel for="bibtexIRI" value="#{msg['Edit.lblBibTeXIRI']}"/></td>
-                    <td><h:inputText id="bibtexIRI" value="#{bibList.bibtexIRI}">
+                    <td><h:inputText id="bibtexIRI" value="#{mutablePortletPreferencesValues['bibtexIRI'].value}"
+                                     required="true">
                         <f:validateRegex pattern="(file:///).+"/>
                     </h:inputText></td>
                     <td><h:message for="bibtexIRI"/></td>
                 </tr>
                 <tr>
                     <td><h:outputLabel for="sections" value="#{msg['Edit.lblSections']}"/></td>
-                    <td><h:inputText id="sections" value="#{bibList.sections}">
-                        <f:validateRegex pattern="([a-zA-Z])+(,?([a-zA-Z])+)*"/>
-                    </h:inputText></td>
+                    <td><h:inputText id="sections" value="#{mutablePortletPreferencesValues['sections'].value}"/></td>
                     <td><h:message for="sections"/></td>
                 </tr>
-              </table>
+
+            </table>
             <hr/>
-            <h:commandButton action="#{bibList.submit}" value="#{msg['Edit.btnSubmit']}"/>
+            <h:commandButton id="btnSubmit" action="#{bbconfiguration.submit}" value="#{msg['Edit.btnSubmit']}">
+                <f:ajax disabled="true"/>
+            </h:commandButton>
         </h:form>
     </h:body>
 </f:view>

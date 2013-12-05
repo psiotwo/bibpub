@@ -1,24 +1,31 @@
 <?xml version="1.0"?>
-<html version="XHTML+RDFa 1.1" xmlns:ui="http://java.sun.com/jsf/facelets">
-<f:view
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:composite="http://java.sun.com/jsf/composite"
-        xmlns:f="http://java.sun.com/jsf/core"
-        xmlns:h="http://java.sun.com/jsf/html">
+<html version="XHTML+RDFa 1.1"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:aui="http://liferay.com/faces/aui">
+<f:view>
     <h:head>
         <base href="http://#{requestScope.liferayFacesContext.portletRequest.contextPath}" />
     </h:head>
     <h:body>
         <composite:interface>
-            <composite:attribute name="bibList" required="true"/>
+            <composite:attribute name="biblist" required="true"/>
         </composite:interface>
 
         <composite:implementation>
-        <h:dataTable value="#{cc.attrs.bibList.getAllObjectsInDescendingDate()}" var="bibitem">
+            <ul>
+        <h:dataTable value="#{cc.attrs.biblist.getAllObjectsInDescendingDate()}" var="bibitem">
             <h:column>
-            	<h:outputText value="#{bibList.formatInHTML(bibitem)}" escape="false" />            	
+                <li>
+               	<h:link onclick="alert('#{cc.attrs.biblist.formatEntry(bibitem)}')">
+            		    <h:outputText value="#{cc.attrs.biblist.formatInHTML(bibitem)}" escape="false" />
+            	</h:link>
+                </li>
             </h:column>
         </h:dataTable>
+            </ul>
         </composite:implementation>
     </h:body>
 </f:view>

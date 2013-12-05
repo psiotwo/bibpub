@@ -31,9 +31,7 @@ public class RDFaReferenceFormatter extends ReferenceFormatter {
 	    throw new IllegalArgumentException();
 	}
 	String s = super.format(entry, latex, html);
-	s = "<p onclick=\"alert('"
-		+ BibList.formatEntry(entry)
-		+ "')\" prefix=\"bib: http://zeitkunst.org/bibtex/0.2/bibtex.owl#\" typeof=\"bib:Entry\">"
+	s = "<p prefix=\"bib: http://zeitkunst.org/bibtex/0.2/bibtex.owl#\" typeof=\"bib:Entry\">"
 		+ s + "</p>";
 	return s;
     }
