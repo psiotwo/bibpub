@@ -17,7 +17,7 @@
         </liferay.app.server.lib.global.dir>
         <liferay.app.server.portal.dir>liferay-portal-6.2.0-ce-ga2/tomcat-7.0.27/webapps/ROOT
         </liferay.app.server.portal.dir>
-        <liferay-faces-portal.version>3.2.4-ga5-SNAPSHOT</liferay-faces-portal.version>
+        <liferay-faces-portal.version>4.2.5-ga6</liferay-faces-portal.version>
     </properties>
     <build>
         <plugins>
